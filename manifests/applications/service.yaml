@@ -13,4 +13,4 @@ spec:
   - name: http                  # Port name
     protocol: TCP               # Protocol (TCP/UDP)
     port: 80                    # Service port (what clients connect to)
-    targetPort: 8888            # Pod port (where app actually listens)
+    targetPort: 5000            # Pod port (where app actually listens)

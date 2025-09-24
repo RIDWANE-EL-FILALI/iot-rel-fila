@@ -20,7 +20,7 @@ spec:                            # Desired state specification
       - name: playground         # Container name
         image: broly20/flask-app-p3:v1  # Docker image to run
         ports:
-        - containerPort: 8888    # Port the app listens on
+        - containerPort: 5000    # Port the app listens on
         resources:               # Resource limits/requests
           requests:
             memory: "64Mi"

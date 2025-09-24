@@ -3,7 +3,7 @@ import socket
 
 app = Flask(__name__)
 
-# HTML Template with Pixelated Flying Bat
+# HTML Template with White Pixel Bat on Black Background
 HTML_TEMPLATE = '''
 <!DOCTYPE html>
 <html lang="en">
@@ -29,203 +29,108 @@ HTML_TEMPLATE = '''
         .hostname {
             font-size: 3rem;
             font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            text-shadow: 2px 2px 4px rgba(255,255,255,0.3);
             margin-bottom: 50px;
+            z-index: 10;
+            position: relative;
         }
 
         .bat-container {
-            position: relative;
-            width: 600px;
-            height: 200px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
         }
 
         .bat {
+            width: 1px;
+            height: 1px;
+            transform: scale(3);
             position: absolute;
-            width: 64px;
-            height: 32px;
-            animation: bat-fly 4s linear infinite;
+            left: 50px;
+            top: 50px;
+            animation: bat 0.4s steps(1) infinite, fly-around 20s linear infinite;
             image-rendering: pixelated;
             image-rendering: -moz-crisp-edges;
             image-rendering: crisp-edges;
         }
 
-        .bat::before {
-            content: '';
-            position: absolute;
-            width: 64px;
-            height: 32px;
-            background-image: 
-                /* Bat sprite frame 1 - wings up */
-                radial-gradient(circle at 8px 16px, #333 2px, transparent 2px),
-                radial-gradient(circle at 16px 8px, #333 4px, transparent 4px),
-                radial-gradient(circle at 32px 4px, #333 3px, transparent 3px),
-                radial-gradient(circle at 48px 8px, #333 4px, transparent 4px),
-                radial-gradient(circle at 56px 16px, #333 2px, transparent 2px),
-                /* Body */
-                linear-gradient(to bottom, #666 24px, #444 32px),
-                /* Wings */
-                linear-gradient(45deg, #555 0%, #333 50%, #222 100%),
-                linear-gradient(-45deg, #555 0%, #333 50%, #222 100%);
-            background-size: 
-                4px 4px, 8px 8px, 6px 6px, 8px 8px, 4px 4px,
-                8px 32px, 28px 20px, 28px 20px;
-            background-position: 
-                0px 12px, 4px 0px, 28px -2px, 52px 0px, 60px 12px,
-                28px 0px, 0px 8px, 36px 8px;
-            background-repeat: no-repeat;
-            animation: bat-wing-flap 0.3s ease-in-out infinite alternate;
+        @keyframes fly-around {
+            0% { 
+                left: 50px; 
+                top: 100px; 
+                transform: scale(3) rotate(0deg);
+            }
+            25% { 
+                left: calc(100vw - 300px); 
+                top: 200px; 
+                transform: scale(3) rotate(15deg);
+            }
+            50% { 
+                left: calc(100vw - 200px); 
+                top: calc(100vh - 300px); 
+                transform: scale(3) rotate(-10deg);
+            }
+            75% { 
+                left: 100px; 
+                top: calc(100vh - 200px); 
+                transform: scale(3) rotate(5deg);
+            }
+            100% { 
+                left: 50px; 
+                top: 100px; 
+                transform: scale(3) rotate(0deg);
+            }
         }
 
-        /* Alternative bat sprite using CSS pixel art */
-        .bat-pixel {
-            position: absolute;
-            width: 80px;
-            height: 40px;
-            animation: bat-fly 4s linear infinite;
-        }
-
-        .bat-pixel::before {
-            content: '';
-            position: absolute;
-            width: 80px;
-            height: 40px;
-            background-image: 
-                /* Creating a detailed pixel bat */
-                linear-gradient(to right, transparent 36px, #666 36px, #666 44px, transparent 44px),
-                linear-gradient(to right, transparent 34px, #555 34px, #555 38px, transparent 38px, transparent 42px, #555 42px, #555 46px, transparent 46px),
-                linear-gradient(to right, transparent 32px, #444 32px, #444 36px, transparent 36px, transparent 44px, #444 44px, #444 48px, transparent 48px),
-                linear-gradient(to right, transparent 28px, #333 28px, #333 32px, transparent 32px, transparent 48px, #333 48px, #333 52px, transparent 52px),
-                linear-gradient(to right, transparent 24px, #444 24px, #444 28px, transparent 28px, transparent 52px, #444 52px, #444 56px, transparent 56px),
-                linear-gradient(to right, transparent 20px, #555 20px, #555 24px, transparent 24px, transparent 56px, #555 56px, #555 60px, transparent 60px),
-                linear-gradient(to right, transparent 16px, #333 16px, #333 20px, transparent 20px, transparent 60px, #333 60px, #333 64px, transparent 64px),
-                linear-gradient(to right, transparent 12px, #444 12px, #444 16px, transparent 16px, transparent 64px, #444 64px, #444 68px, transparent 68px),
-                linear-gradient(to right, transparent 8px, #555 8px, #555 12px, transparent 12px, transparent 68px, #555 68px, #555 72px, transparent 72px),
-                linear-gradient(to right, transparent 4px, #333 4px, #333 8px, transparent 8px, transparent 72px, #333 72px, #333 76px, transparent 76px),
-                linear-gradient(to right, transparent 0px, #444 0px, #444 4px, transparent 4px, transparent 76px, #444 76px, #444 80px, transparent 80px);
-            background-size: 80px 2px;
-            background-position: 
-                0px 18px, 0px 16px, 0px 14px, 0px 12px, 0px 10px,
-                0px 8px, 0px 6px, 0px 4px, 0px 2px, 0px 0px, 0px 20px;
-            background-repeat: no-repeat;
-            animation: bat-wing-flap 0.4s ease-in-out infinite alternate;
-        }
-
-        @keyframes bat-fly {
+        /* Bat animation keyframes with white pixels */
+        @keyframes bat {
             0% {
-                left: -80px;
-                top: 50%;
-                transform: translateY(-50%);
+                box-shadow: 33px 6px #ffffff, 34px 6px #ffffff, 35px 6px #ffffff, 36px 6px #ffffff, 20px 7px #ffffff, 21px 7px #ffffff, 22px 7px #ffffff, 23px 7px #ffffff, 33px 7px #ffffff, 34px 7px #ffffff, 35px 7px #000000, 36px 7px #000000, 37px 7px #ffffff, 38px 7px #ffffff, 39px 7px #ffffff, 43px 7px #ffffff, 20px 8px #ffffff, 21px 8px #ffffff, 22px 8px #ffffff, 23px 8px #ffffff, 33px 8px #ffffff, 34px 8px #ffffff, 35px 8px #000000, 36px 8px #000000, 37px 8px #ffffff, 38px 8px #ffffff, 39px 8px #ffffff, 43px 8px #ffffff, 17px 9px #ffffff, 18px 9px #ffffff, 19px 9px #ffffff, 20px 9px #ffffff, 35px 9px #ffffff, 36px 9px #000000, 37px 9px #000000, 38px 9px #000000, 39px 9px #000000, 40px 9px #ffffff, 41px 9px #ffffff, 42px 9px #ffffff, 43px 9px #000000, 44px 9px #ffffff, 45px 9px #ffffff, 16px 10px #ffffff, 17px 10px #000000, 18px 10px #000000, 19px 10px #000000, 20px 10px #ffffff, 36px 10px #ffffff, 37px 10px #000000, 38px 10px #000000, 39px 10px #000000, 40px 10px #000000, 41px 10px #000000, 42px 10px #000000, 43px 10px #000000, 44px 10px #ffffff, 45px 10px #ffffff, 16px 11px #ffffff, 17px 11px #000000, 18px 11px #000000, 19px 11px #000000, 20px 11px #ffffff, 36px 11px #ffffff, 37px 11px #000000, 38px 11px #000000, 39px 11px #000000, 40px 11px #000000, 41px 11px #000000, 42px 11px #000000, 43px 11px #000000, 44px 11px #ffffff, 45px 11px #ffffff, 13px 12px #ffffff, 14px 12px #ffffff, 15px 12px #ffffff, 16px 12px #000000, 17px 12px #000000, 18px 12px #ffffff, 19px 12px #ffffff, 20px 12px #ffffff, 36px 12px #ffffff, 37px 12px #ffffff, 38px 12px #ffffff, 39px 12px #000000, 40px 12px #000000, 41px 12px #000000, 42px 12px #000000, 43px 12px #000000, 44px 12px #ffffff, 45px 12px #ffffff, 12px 13px #ffffff, 13px 13px #000000, 14px 13px #000000, 15px 13px #000000, 16px 13px #000000, 17px 13px #000000, 18px 13px #ffffff, 19px 13px #ffffff, 37px 13px #ffffff, 38px 13px #ffffff, 39px 13px #000000, 40px 13px #000000, 41px 13px #000000, 42px 13px #000000, 43px 13px #000000, 44px 13px #000000, 45px 13px #000000, 46px 13px #ffffff, 10px 14px #ffffff, 11px 14px #ffffff, 12px 14px #000000, 13px 14px #000000, 14px 14px #000000, 15px 14px #000000, 16px 14px #000000, 17px 14px #ffffff, 36px 14px #ffffff, 37px 14px #ffffff, 38px 14px #ffffff, 39px 14px #000000, 40px 14px #000000, 41px 14px #000000, 42px 14px #000000, 43px 14px #000000, 44px 14px #000000, 45px 14px #000000, 46px 14px #000000, 47px 14px #ffffff, 10px 15px #ffffff, 11px 15px #ffffff, 12px 15px #000000, 13px 15px #000000, 14px 15px #000000, 15px 15px #000000, 16px 15px #000000, 17px 15px #ffffff, 36px 15px #ffffff, 37px 15px #ffffff, 38px 15px #ffffff, 39px 15px #000000, 40px 15px #000000, 41px 15px #000000, 42px 15px #000000, 43px 15px #000000, 44px 15px #000000, 45px 15px #000000, 46px 15px #000000, 47px 15px #ffffff;
             }
             25% {
-                top: 30%;
-                transform: translateY(-50%) rotate(-5deg);
+                box-shadow: 17px 7px #ffffff, 37px 7px #ffffff, 38px 7px #ffffff, 17px 8px #ffffff, 37px 8px #ffffff, 38px 8px #ffffff, 16px 9px #ffffff, 17px 9px #000000, 18px 9px #ffffff, 19px 9px #ffffff, 36px 9px #ffffff, 37px 9px #000000, 38px 9px #000000, 39px 9px #ffffff, 43px 9px #ffffff, 44px 9px #ffffff, 45px 9px #ffffff, 14px 10px #ffffff, 15px 10px #ffffff, 16px 10px #000000, 17px 10px #ffffff, 37px 10px #ffffff, 38px 10px #ffffff, 39px 10px #000000, 40px 10px #ffffff, 43px 10px #ffffff, 44px 10px #000000, 45px 10px #000000, 46px 10px #ffffff, 14px 11px #ffffff, 15px 11px #ffffff, 16px 11px #000000, 17px 11px #ffffff, 37px 11px #ffffff, 38px 11px #ffffff, 39px 11px #000000, 40px 11px #ffffff, 43px 11px #ffffff, 44px 11px #000000, 45px 11px #000000, 46px 11px #ffffff, 10px 12px #ffffff, 11px 12px #ffffff, 13px 12px #ffffff, 14px 12px #000000, 15px 12px #000000, 16px 12px #000000, 17px 12px #ffffff, 37px 12px #ffffff, 38px 12px #ffffff, 39px 12px #000000, 40px 12px #000000, 41px 12px #ffffff, 42px 12px #ffffff, 43px 12px #ffffff, 44px 12px #000000, 45px 12px #000000, 46px 12px #000000, 47px 12px #ffffff;
             }
             50% {
-                top: 70%;
-                transform: translateY(-50%) rotate(5deg);
+                box-shadow: 47px 14px #000000, 47px 15px #000000, 14px 16px #000000, 15px 16px #000000, 28px 20px #ffffff, 29px 20px #ffffff, 30px 20px #ffffff, 48px 20px #000000, 49px 20px #000000, 9px 21px #000000, 18px 21px #ffffff, 19px 21px #ffffff, 20px 21px #ffffff, 21px 21px #ffffff, 22px 21px #ffffff, 23px 21px #ffffff, 27px 21px #ffffff, 28px 21px #000000, 29px 21px #ffffff, 30px 21px #ffffff, 20px 22px #ffffff, 21px 22px #000000, 22px 22px #000000, 23px 22px #000000, 24px 22px #ffffff, 25px 22px #ffffff, 26px 22px #ffffff, 27px 22px #ffffff, 28px 22px #000000, 29px 22px #000000, 30px 22px #000000, 31px 22px #ffffff;
             }
             75% {
-                top: 40%;
-                transform: translateY(-50%) rotate(-3deg);
-            }
-            100% {
-                left: 600px;
-                top: 60%;
-                transform: translateY(-50%);
+                box-shadow: 31px 16px #ffffff, 32px 16px #ffffff, 31px 17px #ffffff, 32px 17px #ffffff, 20px 18px #ffffff, 21px 18px #ffffff, 28px 18px #ffffff, 29px 18px #ffffff, 30px 18px #ffffff, 31px 18px #000000, 32px 18px #000000, 33px 18px #ffffff, 34px 18px #ffffff, 20px 19px #ffffff, 21px 19px #ffffff, 28px 19px #ffffff, 29px 19px #ffffff, 30px 19px #ffffff, 31px 19px #000000, 32px 19px #000000, 33px 19px #ffffff, 34px 19px #ffffff, 20px 20px #ffffff, 21px 20px #000000, 22px 20px #ffffff, 23px 20px #ffffff, 27px 20px #ffffff, 28px 20px #000000, 29px 20px #ffffff, 30px 20px #ffffff, 31px 20px #000000, 32px 20px #000000, 33px 20px #ffffff, 34px 20px #ffffff;
             }
         }
 
-        @keyframes bat-wing-flap {
-            0% {
-                transform: scaleY(0.8);
-                filter: brightness(0.8);
-            }
-            100% {
-                transform: scaleY(1.2);
-                filter: brightness(1.2);
-            }
-        }
-
-        .moon {
-            position: absolute;
-            top: 50px;
-            right: 100px;
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #fff 0%, #f0f0f0 50%, #ddd 100%);
-            border-radius: 50%;
-            box-shadow: 0 0 20px rgba(255,255,255,0.3);
-        }
-
-        .moon::before {
-            content: '';
-            position: absolute;
-            width: 12px;
-            height: 12px;
-            background: #ccc;
-            border-radius: 50%;
-            top: 20px;
-            left: 25px;
-            box-shadow: 
-                15px 10px 0 -2px #ccc,
-                8px 35px 0 -4px #ccc,
-                35px 25px 0 -3px #ccc;
-        }
-
-        .stars {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
-
+        /* Additional decorative elements */
         .star {
             position: absolute;
             color: #fff;
-            font-size: 16px;
-            animation: twinkle 2s ease-in-out infinite alternate;
+            font-size: 12px;
+            animation: twinkle 3s ease-in-out infinite alternate;
         }
 
         @keyframes twinkle {
-            0% { opacity: 0.3; transform: scale(0.8); }
-            100% { opacity: 1; transform: scale(1.2); }
+            0% { opacity: 0.3; }
+            100% { opacity: 1; }
         }
 
-        .star:nth-child(1) { top: 20%; left: 15%; animation-delay: 0s; }
-        .star:nth-child(2) { top: 30%; left: 80%; animation-delay: 0.5s; }
-        .star:nth-child(3) { top: 60%; left: 20%; animation-delay: 1s; }
-        .star:nth-child(4) { top: 15%; left: 60%; animation-delay: 1.5s; }
-        .star:nth-child(5) { top: 70%; left: 75%; animation-delay: 2s; }
-        .star:nth-child(6) { top: 45%; left: 10%; animation-delay: 0.3s; }
-        .star:nth-child(7) { top: 25%; left: 40%; animation-delay: 1.2s; }
-        .star:nth-child(8) { top: 80%; left: 50%; animation-delay: 0.8s; }
-
-        .ground {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            height: 40px;
-            background: linear-gradient(to top, #111 0%, #222 50%, transparent 100%);
-        }
+        .star:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
+        .star:nth-child(2) { top: 20%; left: 80%; animation-delay: 1s; }
+        .star:nth-child(3) { top: 70%; left: 15%; animation-delay: 2s; }
+        .star:nth-child(4) { top: 15%; left: 70%; animation-delay: 0.5s; }
+        .star:nth-child(5) { top: 80%; left: 85%; animation-delay: 1.5s; }
     </style>
 </head>
 <body>
     <div class="hostname">{{ hostname }}</div>
     
     <div class="bat-container">
-        <div class="moon"></div>
-        <div class="bat-pixel"></div>
-        <div class="stars">
-            <div class="star">✦</div>
-            <div class="star">✧</div>
-            <div class="star">⭐</div>
-            <div class="star">✦</div>
-            <div class="star">✧</div>
-            <div class="star">✦</div>
-            <div class="star">✧</div>
-            <div class="star">⭐</div>
-        </div>
-        <div class="ground"></div>
+        <div class="bat"></div>
+        <div class="star">✦</div>
+        <div class="star">✧</div>
+        <div class="star">⭐</div>
+        <div class="star">✦</div>
+        <div class="star">✧</div>
     </div>
 </body>
 </html>
@@ -233,7 +138,7 @@ HTML_TEMPLATE = '''
 
 @app.route("/")
 def home():
-    """Main route showing hostname with flying pixelated bat animation"""
+    """Main route showing hostname with flying white pixel bat on black background"""
     hostname = socket.gethostname()
     return render_template_string(HTML_TEMPLATE, hostname=hostname)
 
